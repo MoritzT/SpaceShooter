@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
     public GameObject projectile;
     public float projectileSpeed = 8f;
     public float fireRate = 0.5f;
+    public float health = 1000f;
 
     private float padding = 0.3f;
 
@@ -25,7 +26,8 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Fire() {
-        GameObject bullet = Instantiate(projectile, new Vector3(transform.position.x + 0.2f, transform.position.y + 0.25f), Quaternion.identity) as GameObject;
+        Vector3 startPosition = transform.position + new Vector3(0.2f, 0.25f, 0);
+        GameObject bullet = Instantiate(projectile, startPosition, Quaternion.identity) as GameObject;
         bullet.GetComponent<Rigidbody2D>().velocity = new Vector3(0, projectileSpeed, 0);
     }
 
@@ -52,5 +54,18 @@ public class PlayerController : MonoBehaviour {
             CancelInvoke("Fire");
         }
     }
-    
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Projectile bullet = collision.gameObject.GetComponent<Projectile>();
+        if (bullet)
+        {
+            health -= bullet.GetDamage();
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
+
 }
